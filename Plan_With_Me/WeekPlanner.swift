@@ -12,10 +12,18 @@ struct WeekPlanner: View {
     @State private var isTomorrowPreviewPresented = true
     @State private var selectedButton: ButtonType = .tomorrowPreview
     @State private var navigateToHome = false
+    @Environment(\.managedObjectContext) private var viewContext
     
     enum ButtonType {
         case tomorrowPreview, weeklyTasks
     }
+    
+    @FetchRequest(
+        entity: DailyPlanner.entity(),
+        sortDescriptors: [NSSortDescriptor(keyPath: \DailyPlanner.startDate, ascending: true)],
+        predicate: NSPredicate(format: "startDate >= %@ AND startDate < %@", Calendar.current.startOfDay(for: Date()).addingTimeInterval(86400) as NSDate,
+            Calendar.current.startOfDay(for: Date()).addingTimeInterval(172800) as NSDate)
+    ) private var dailyPlans: FetchedResults <DailyPlanner>
     
     func getTomorrowDate() -> String {
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
@@ -29,7 +37,7 @@ struct WeekPlanner: View {
         let calendar = Calendar.current
         
         let currentWeekday = calendar.component(.weekday, from: today)
-        let daysToNextMonday = (8 - currentWeekday) % 7
+        let daysToNextMonday = (9 - currentWeekday) % 7
         let firstDayOfNextWeek = calendar.date(byAdding: .day, value: daysToNextMonday, to: today)!
         let lastDayOfNextWeek = calendar.date(byAdding: .day, value: 6, to: firstDayOfNextWeek)!
         
@@ -153,21 +161,17 @@ struct WeekPlanner: View {
                                 .foregroundColor(Color(hue: 1.0, saturation: 0.221, brightness: 0.577))
                                 .padding(.top, 20)
                                 .padding(.leading, 15)
-                                NavigationLink(destination: CreateNewPlan(
-                                    isPresented: $isCreateNewPlanPresented,
-                                    startDate: startDate,
-                                    endDate: endDate,
-                                    backgroundColor: backgroundColor,
-                                    title: title,
-                                    note: note
-                                )) {
+                            Spacer()
+                            Button(action: {
+                                self.isCreateNewPlanPresented = true
+                            }) {
                                     Text("+")
                                         .font(.title)
                                         .foregroundColor(.white)
                                         .frame(width: 60, height: 60)
                                         .background(Color(hue: 0.406, saturation: 0.421, brightness: 0.966))
                                         .clipShape(Circle())
-                                        .padding(.leading, 50)
+                                        .padding(.trailing, 50)
                                     }
                                         .padding(.top, 20)
                                 }

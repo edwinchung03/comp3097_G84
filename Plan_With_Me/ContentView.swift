@@ -9,6 +9,13 @@ struct ContentView: View {
     @State private var note = "This is a plan."
     @State private var isMenuPresented = false
     @State private var navigateToWeekPlanner = false
+    @Environment(\.managedObjectContext) private var viewContext
+    
+    @FetchRequest(
+        entity: DailyPlanner.entity(),
+        sortDescriptors: [NSSortDescriptor(keyPath: \DailyPlanner.startDate, ascending: true)],
+        predicate: NSPredicate(format: "startDate >= %@ AND startDate < %@", Date() as NSDate, Calendar.current.startOfDay(for: Date()).addingTimeInterval(86400) as NSDate)
+    ) private var dailyPlans: FetchedResults<DailyPlanner>
 
     func getCurrentDateTime() -> String {
         let formatter = DateFormatter()
@@ -34,7 +41,7 @@ struct ContentView: View {
                             .foregroundColor(.white)
                             .padding(.leading, 20)
                     }
-
+                    
                     Text("HOME")
                         .font(.custom("Arial", size: 40))
                         .multilineTextAlignment(.center)
@@ -43,13 +50,13 @@ struct ContentView: View {
                         .foregroundColor(.white)
                         .padding(.top, 10)
                         .padding(.leading, 150)
-
+                    
                     Spacer()
                 }
                 .frame(height: 70)
                 .background(Color(hue: 0.336, saturation: 0.33, brightness: 0.999))
                 .foregroundColor(.white)
-
+                
                 if isMenuPresented {
                     VStack {
                         Button("HOME") {
@@ -59,7 +66,7 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity)
                         .background(Color(hue: 0.336, saturation: 0.33, brightness: 0.999))
                         .foregroundColor(.black)
-
+                        
                         Button("WEEK PLANNER") {
                             self.isMenuPresented = false
                             self.navigateToWeekPlanner = true
@@ -68,7 +75,7 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity)
                         .background(Color(hue: 0.336, saturation: 0.33, brightness: 0.999))
                         .foregroundColor(.black)
-
+                        
                         Button("MUST-DO") {
                             self.isMenuPresented = false
                         }
@@ -81,8 +88,8 @@ struct ContentView: View {
                     .background(Color(hue: 0.336, saturation: 0.33, brightness: 0.999))
                     .transition(.move(edge: .leading))
                 }
-
-
+                
+                
                 VStack(alignment: .leading) {
                     Text("Plan With Me")
                         .font(.custom("Arial", size: 40))
@@ -100,24 +107,19 @@ struct ContentView: View {
                         .foregroundColor(Color(hue: 1.0, saturation: 0.221, brightness: 0.577))
                         .padding(.leading, 40)
                         .padding(.top, 20)
-
+                    
                     HStack {
                         Text(getCurrentTime())
                             .font(.custom("Arial", size: 25))
                             .italic()
                             .foregroundColor(Color(hue: 1.0, saturation: 0.221, brightness: 0.577))
                             .padding(.leading, 40)
-
+                        
                         Spacer()
-
-                        NavigationLink(destination: CreateNewPlan(
-                            isPresented: $isCreateNewPlanPresented,
-                            startDate: startDate,
-                            endDate: endDate,
-                            backgroundColor: backgroundColor,
-                            title: title,
-                            note: note
-                        )) {
+                        
+                        Button(action: {
+                            self.isCreateNewPlanPresented = true
+                        }) {
                             Text("+")
                                 .font(.title)
                                 .foregroundColor(.white)
@@ -128,21 +130,48 @@ struct ContentView: View {
                         }
                     }
                     .padding(.top, 10)
+                    
+                    Text("Today's Plans: ")
+                        .font(.headline)
+                        .padding(.top, 20)
+                        .padding(.leading, 150)
+                    
+                    List(dailyPlans, id: \.self) { plan in
+                        VStack(alignment: .leading) {
+                            Text(plan.title ?? "No title")
+                                .font(.subheadline)
+                            Text("From \(dateFormatter.string(from: plan.startDate!)) to \(dateFormatter.string(from: plan.endDate!))")
+                            Text(plan.note ?? "No note")
+                                .font(.body)
+                        }
+                        .padding()
+                    }
                 }
-
+                
                 Spacer()
             }
             .background(
                 NavigationLink(destination: WeekPlanner(), isActive: $navigateToWeekPlanner) {
-                        EmptyView()
-                    }
+                    EmptyView()
+                }
             )
             .background(Color.white)
+            .sheet(isPresented: $isCreateNewPlanPresented){
+                CreateNewPlan(isPresented: $isCreateNewPlanPresented, startDate: Date(), endDate: Date(), backgroundColor: Color.green, title: "", note: "")
+            }
         }
     }
 }
 
+private let dateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .short
+    formatter.timeStyle = .short
+    return formatter
+}()
+
 struct ContentView_Previews: PreviewProvider {
+    
     static var previews: some View {
         ContentView()
     }
