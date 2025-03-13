@@ -8,6 +8,8 @@ struct CreateNewWeekPlan: View {
     @State var backgroundColor: Color
     @State var title: String
     
+    @Environment(\.managedObjectContext) private var viewContext
+    
     var body: some View {
         VStack {
             Text("Create a New Week Plan")
@@ -42,8 +44,19 @@ struct CreateNewWeekPlan: View {
                 Spacer()
                 
                 Button("Save") {
-                    print("Plan Saved: \(title), \(startDate), \(endDate), \(backgroundColor)")
-                    self.isPresented = false
+                    let newWeekPlan = WeeklyPlanner(context: viewContext)
+                    newWeekPlan.title = title
+                    newWeekPlan.startDate = startDate
+                    newWeekPlan.endDate = endDate
+                    newWeekPlan.backgroundColor = UIColor(backgroundColor).toHexString()
+                    
+                    do{
+                        try viewContext.save()
+                        print("Week Plan saved: \(title), \(startDate), \(endDate), \(backgroundColor)")
+                        self.isPresented = false
+                    } catch{
+                        print("Failed to save plan: \(error.localizedDescription)")
+                    }
                 }
                 .padding()
                 .foregroundColor(.green)

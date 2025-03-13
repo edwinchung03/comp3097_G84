@@ -14,6 +14,10 @@
 		18277BBF2D6E2BF30033F5C0 /* CreateNewPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18277BBE2D6E2BF30033F5C0 /* CreateNewPlan.swift */; };
 		18277BC12D6E3A560033F5C0 /* WeekPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18277BC02D6E3A550033F5C0 /* WeekPlanner.swift */; };
 		18277BC32D6E49D00033F5C0 /* CreateNewWeekPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18277BC22D6E49D00033F5C0 /* CreateNewWeekPlan.swift */; };
+		18339BF32D83298C00C12433 /* WeeklyPlanner+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18339BF12D83298C00C12433 /* WeeklyPlanner+CoreDataClass.swift */; };
+		18339BF42D83298C00C12433 /* WeeklyPlanner+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18339BF22D83298C00C12433 /* WeeklyPlanner+CoreDataProperties.swift */; };
+		18339BF82D83340B00C12433 /* Routine+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18339BF62D83340A00C12433 /* Routine+CoreDataClass.swift */; };
+		18339BF92D83340B00C12433 /* Routine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18339BF72D83340A00C12433 /* Routine+CoreDataProperties.swift */; };
 		189ADB6A2D6E4C47003ECE26 /* Must_do.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189ADB692D6E4C47003ECE26 /* Must_do.swift */; };
 		189ADB6C2D6E4E95003ECE26 /* CreateNewRoutine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189ADB6B2D6E4E95003ECE26 /* CreateNewRoutine.swift */; };
 		2E21774D2D808EB9008996EA /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2E21774B2D808EB9008996EA /* Model.xcdatamodeld */; };
@@ -32,6 +36,10 @@
 		18277BBE2D6E2BF30033F5C0 /* CreateNewPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewPlan.swift; sourceTree = "<group>"; };
 		18277BC02D6E3A550033F5C0 /* WeekPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekPlanner.swift; sourceTree = "<group>"; };
 		18277BC22D6E49D00033F5C0 /* CreateNewWeekPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewWeekPlan.swift; sourceTree = "<group>"; };
+		18339BF12D83298C00C12433 /* WeeklyPlanner+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeeklyPlanner+CoreDataClass.swift"; sourceTree = "<group>"; };
+		18339BF22D83298C00C12433 /* WeeklyPlanner+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeeklyPlanner+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		18339BF62D83340A00C12433 /* Routine+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Routine+CoreDataClass.swift"; sourceTree = "<group>"; };
+		18339BF72D83340A00C12433 /* Routine+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Routine+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		189ADB692D6E4C47003ECE26 /* Must_do.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Must_do.swift; sourceTree = "<group>"; };
 		189ADB6B2D6E4E95003ECE26 /* CreateNewRoutine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewRoutine.swift; sourceTree = "<group>"; };
 		2E21774C2D808EB9008996EA /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
@@ -71,18 +79,13 @@
 		18277BAF2D6E201C0033F5C0 /* Plan_With_Me */ = {
 			isa = PBXGroup;
 			children = (
+				18339BFB2D83344D00C12433 /* Main_View */,
+				18339BFA2D83341E00C12433 /* Create_View */,
+				18339BF52D8329C300C12433 /* Class&Properties */,
 				18277BB02D6E201C0033F5C0 /* Plan_With_MeApp.swift */,
-				18277BB22D6E201C0033F5C0 /* ContentView.swift */,
 				18277BB42D6E201D0033F5C0 /* Assets.xcassets */,
 				18277BB62D6E201D0033F5C0 /* Preview Content */,
-				18277BC02D6E3A550033F5C0 /* WeekPlanner.swift */,
-				18277BBE2D6E2BF30033F5C0 /* CreateNewPlan.swift */,
 				2E2177542D809DA3008996EA /* UIColor.swift */,
-				18277BC22D6E49D00033F5C0 /* CreateNewWeekPlan.swift */,
-				189ADB692D6E4C47003ECE26 /* Must_do.swift */,
-				189ADB6B2D6E4E95003ECE26 /* CreateNewRoutine.swift */,
-				2E2177502D808F89008996EA /* DailyPlanner+CoreDataClass.swift */,
-				2E2177512D808F89008996EA /* DailyPlanner+CoreDataProperties.swift */,
 				2E21774B2D808EB9008996EA /* Model.xcdatamodeld */,
 				2E21774E2D808EF6008996EA /* DataController.swift */,
 			);
@@ -95,6 +98,39 @@
 				18277BB72D6E201D0033F5C0 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		18339BF52D8329C300C12433 /* Class&Properties */ = {
+			isa = PBXGroup;
+			children = (
+				18339BF62D83340A00C12433 /* Routine+CoreDataClass.swift */,
+				18339BF72D83340A00C12433 /* Routine+CoreDataProperties.swift */,
+				2E2177502D808F89008996EA /* DailyPlanner+CoreDataClass.swift */,
+				2E2177512D808F89008996EA /* DailyPlanner+CoreDataProperties.swift */,
+				18339BF12D83298C00C12433 /* WeeklyPlanner+CoreDataClass.swift */,
+				18339BF22D83298C00C12433 /* WeeklyPlanner+CoreDataProperties.swift */,
+			);
+			path = "Class&Properties";
+			sourceTree = "<group>";
+		};
+		18339BFA2D83341E00C12433 /* Create_View */ = {
+			isa = PBXGroup;
+			children = (
+				18277BBE2D6E2BF30033F5C0 /* CreateNewPlan.swift */,
+				18277BC22D6E49D00033F5C0 /* CreateNewWeekPlan.swift */,
+				189ADB6B2D6E4E95003ECE26 /* CreateNewRoutine.swift */,
+			);
+			path = Create_View;
+			sourceTree = "<group>";
+		};
+		18339BFB2D83344D00C12433 /* Main_View */ = {
+			isa = PBXGroup;
+			children = (
+				18277BC02D6E3A550033F5C0 /* WeekPlanner.swift */,
+				18277BB22D6E201C0033F5C0 /* ContentView.swift */,
+				189ADB692D6E4C47003ECE26 /* Must_do.swift */,
+			);
+			path = Main_View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -168,16 +204,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				18277BC32D6E49D00033F5C0 /* CreateNewWeekPlan.swift in Sources */,
+				18339BF42D83298C00C12433 /* WeeklyPlanner+CoreDataProperties.swift in Sources */,
 				2E2177552D809DA3008996EA /* UIColor.swift in Sources */,
 				189ADB6A2D6E4C47003ECE26 /* Must_do.swift in Sources */,
 				2E2177532D808F89008996EA /* DailyPlanner+CoreDataProperties.swift in Sources */,
 				18277BC12D6E3A560033F5C0 /* WeekPlanner.swift in Sources */,
 				2E21774D2D808EB9008996EA /* Model.xcdatamodeld in Sources */,
 				2E2177522D808F89008996EA /* DailyPlanner+CoreDataClass.swift in Sources */,
+				18339BF92D83340B00C12433 /* Routine+CoreDataProperties.swift in Sources */,
 				2E21774F2D808EF6008996EA /* DataController.swift in Sources */,
+				18339BF82D83340B00C12433 /* Routine+CoreDataClass.swift in Sources */,
 				18277BB32D6E201C0033F5C0 /* ContentView.swift in Sources */,
 				18277BB12D6E201C0033F5C0 /* Plan_With_MeApp.swift in Sources */,
 				189ADB6C2D6E4E95003ECE26 /* CreateNewRoutine.swift in Sources */,
+				18339BF32D83298C00C12433 /* WeeklyPlanner+CoreDataClass.swift in Sources */,
 				18277BBF2D6E2BF30033F5C0 /* CreateNewPlan.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

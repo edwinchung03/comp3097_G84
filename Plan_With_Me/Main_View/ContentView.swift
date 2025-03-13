@@ -2,13 +2,9 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var isCreateNewPlanPresented = false
-    @State private var startDate = Date()
-    @State private var endDate = Date()
-    @State private var backgroundColor = Color.green
-    @State private var title = "New Plan"
-    @State private var note = "This is a plan."
     @State private var isMenuPresented = false
     @State private var navigateToWeekPlanner = false
+    @State private var navigateToMustDo = false
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
@@ -16,19 +12,35 @@ struct ContentView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \DailyPlanner.startDate, ascending: true)],
         predicate: NSPredicate(format: "startDate >= %@ AND startDate < %@", Date() as NSDate, Calendar.current.startOfDay(for: Date()).addingTimeInterval(86400) as NSDate)
     ) private var dailyPlans: FetchedResults<DailyPlanner>
-
+    
     func getCurrentDateTime() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM d, yyyy"
         return formatter.string(from: Date())
     }
-
+    
     func getCurrentTime() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "h:mm:ss a"
         return formatter.string(from: Date())
     }
-
+    
+    func colorFromHex(_ hex: String?) -> Color {
+        guard let hex = hex, hex.hasPrefix("#"), hex.count == 7 else {
+            return Color.gray
+        }
+        let scanner = Scanner(string: hex)
+        scanner.currentIndex = hex.index(after: hex.startIndex)
+        var rgbValue: UInt64 = 0
+        scanner.scanHexInt64(&rgbValue)
+        
+        return Color(
+            red: Double((rgbValue >> 16) & 0xFF) / 255.0,
+            green: Double((rgbValue >> 8) & 0xFF) / 255.0,
+            blue: Double(rgbValue & 0xFF) / 255.0
+        )
+    }
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -78,6 +90,7 @@ struct ContentView: View {
                         
                         Button("MUST-DO") {
                             self.isMenuPresented = false
+                            self.navigateToMustDo = true
                         }
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -131,48 +144,62 @@ struct ContentView: View {
                     }
                     .padding(.top, 10)
                     
-                    Text("Today's Plans: ")
-                        .font(.headline)
-                        .padding(.top, 20)
-                        .padding(.leading, 150)
-                    
-                    List(dailyPlans, id: \.self) { plan in
-                        VStack(alignment: .leading) {
-                            Text(plan.title ?? "No title")
-                                .font(.subheadline)
-                            Text("From \(dateFormatter.string(from: plan.startDate!)) to \(dateFormatter.string(from: plan.endDate!))")
-                            Text(plan.note ?? "No note")
-                                .font(.body)
+                    VStack(alignment: .leading) {
+                        Text("Today's Plans:")
+                            .font(.headline)
+                            .padding(.top, 20)
+                            .padding(.leading, 130)
+                        
+                        List {
+                            ForEach(dailyPlans, id: \.self) { plan in
+                                VStack(alignment: .leading) {
+                                    Text(plan.title ?? "No title")
+                                        .font(.headline)
+                                    Text("From \(dateFormatter.string(from: plan.startDate!)) to \(dateFormatter.string(from: plan.endDate!))")
+                                        .font(.subheadline)
+                                    Text(plan.note ?? "No note")
+                                        .font(.body)
+                                }
+                                .padding()
+                                .background(colorFromHex(plan.backgroundColor)) // Set background color
+                                .cornerRadius(10)
+                                .shadow(radius: 2)
+                            }
                         }
-                        .padding()
                     }
+                    
+                    Spacer()
                 }
-                
-                Spacer()
-            }
-            .background(
-                NavigationLink(destination: WeekPlanner(), isActive: $navigateToWeekPlanner) {
-                    EmptyView()
+                .background(
+                    NavigationLink(destination: WeekPlanner(), isActive: $navigateToWeekPlanner) {
+                        EmptyView()
+                    }
+                )
+                .background(
+                    NavigationLink(destination: Must_do(), isActive: $navigateToMustDo) {
+                        EmptyView()
+                    }
+                )
+                .background(Color.white)
+                .sheet(isPresented: $isCreateNewPlanPresented){
+                    CreateNewPlan(isPresented: $isCreateNewPlanPresented, startDate: Date(), endDate: Date(), backgroundColor: Color.green, title: "", note: "")
                 }
-            )
-            .background(Color.white)
-            .sheet(isPresented: $isCreateNewPlanPresented){
-                CreateNewPlan(isPresented: $isCreateNewPlanPresented, startDate: Date(), endDate: Date(), backgroundColor: Color.green, title: "", note: "")
             }
+            .navigationBarBackButtonHidden(true)
         }
     }
-}
-
-private let dateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .short
-    return formatter
-}()
-
-struct ContentView_Previews: PreviewProvider {
     
-    static var previews: some View {
-        ContentView()
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+    }()
+    
+    struct ContentView_Previews: PreviewProvider {
+        
+        static var previews: some View {
+            ContentView()
+        }
     }
 }

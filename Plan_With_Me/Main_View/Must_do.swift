@@ -6,14 +6,32 @@ struct Must_do: View {
     @State private var navigateToWeekPlanner = false
     @State private var navigateToHome = false
     @State private var isCreateNewRoutine = false
-    @State private var backgroundColor = Color.green
-    @State private var title = "New Plan"
-    @State private var frequency = "Every Week"
+    
+    @FetchRequest(
+        entity: Routine.entity(),
+        sortDescriptors: [NSSortDescriptor(keyPath: \Routine.title, ascending: true)]
+    ) private var routines: FetchedResults<Routine>
+    
+    func colorFromHex(_ hex: String?) -> Color {
+        guard let hex = hex, hex.hasPrefix("#"), hex.count == 7 else {
+            return Color.gray
+        }
+        let scanner = Scanner(string: hex)
+        scanner.currentIndex = hex.index(after: hex.startIndex)
+        var rgbValue: UInt64 = 0
+        scanner.scanHexInt64(&rgbValue)
+        
+        return Color(
+            red: Double((rgbValue >> 16) & 0xFF) / 255.0,
+            green: Double((rgbValue >> 8) & 0xFF) / 255.0,
+            blue: Double(rgbValue & 0xFF) / 255.0
+        )
+    }
+    
 
     var body: some View {
         NavigationView {
             VStack {
-                // Header with menu button and title
                 HStack {
                     Button(action: {
                         self.isMenuPresented.toggle()
@@ -80,15 +98,14 @@ struct Must_do: View {
                         .italic()
                         .fontWeight(.bold)
                         .foregroundColor(Color(hue: 0.406, saturation: 0.421, brightness: 0.966))
-                        .padding(.top, 20)
+                        .frame(maxWidth: .infinity)
+                        .edgesIgnoringSafeArea(.all)
+                        .padding(.top, 40)
                         .background(Color.white)
                     
-                    NavigationLink(destination: CreateNewRoutine(
-                        isPresented: $isCreateNewRoutine,
-                        backgroundColor: backgroundColor,
-                        title: title,
-                        frequency: frequency
-                    )) {
+                    Button(action: {
+                        self.isCreateNewRoutine = true
+                    }){
                         Text("Add a Routine")
                             .font(.title)
                             .foregroundColor(.black)
@@ -99,8 +116,32 @@ struct Must_do: View {
                             .padding(.horizontal, 20)
                     }
                     
-                    Spacer() // This will ensure that the content stays at the top
                 }
+                .padding(.top, 10)
+                
+                VStack(alignment: .leading){
+                    Text("Your routine")
+                        .font(.headline)
+                        .padding(.top, 20)
+                        .padding(.leading, 130)
+                    
+                    List{
+                        ForEach(routines, id: \.self){ routine in
+                            VStack(alignment: .leading) {
+                                Text(routine.title ?? "No title")
+                                    .font(.headline)
+                                Text(routine.frequency ?? "Every day")
+                                    .font(.subheadline)
+                            }
+                            .padding()
+                            .background(colorFromHex(routine.backgroundColor))
+                            .cornerRadius(10)
+                            .shadow(radius: 2)
+                        }
+                    }
+                }
+                Spacer()
+                
                 .background(
                     NavigationLink(destination: ContentView(), isActive: $navigateToHome) {
                             EmptyView()
@@ -109,11 +150,15 @@ struct Must_do: View {
                 .background(
                     NavigationLink(destination: WeekPlanner(), isActive: $navigateToWeekPlanner) {
                             EmptyView()
-                        }
+                    }
                 )
+                .sheet(isPresented: $isCreateNewRoutine){
+                    CreateNewRoutine(isPresented: $isCreateNewRoutine, backgroundColor: Color.green, title: "")
+                }
             }
-            .padding(.top, 0) // Remove any default padding at the top of the VStack
+            .padding(.top, 0)
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
