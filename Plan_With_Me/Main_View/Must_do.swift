@@ -6,6 +6,7 @@ struct Must_do: View {
     @State private var navigateToWeekPlanner = false
     @State private var navigateToHome = false
     @State private var isCreateNewRoutine = false
+    @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
         entity: Routine.entity(),
@@ -57,7 +58,6 @@ struct Must_do: View {
                 .background(Color(hue: 0.336, saturation: 0.33, brightness: 0.999))
                 .foregroundColor(.white)
 
-                // Menu
                 if isMenuPresented {
                     VStack {
                         Button("HOME") {
@@ -91,7 +91,6 @@ struct Must_do: View {
                     .transition(.move(edge: .leading))
                 }
 
-                // Main content, placed at the top
                 VStack(alignment: .leading) {
                     Text("Plan With Me")
                         .font(.custom("Arial", size: 40))
@@ -137,6 +136,17 @@ struct Must_do: View {
                             .background(colorFromHex(routine.backgroundColor))
                             .cornerRadius(10)
                             .shadow(radius: 2)
+                        }
+                        .onDelete { indexSet in
+                            for index in indexSet {
+                                let routine = routines[index]
+                                viewContext.delete(routine)
+                            }
+                            do {
+                                try viewContext.save()
+                            } catch {
+                                print("Error deleting routine: \(error.localizedDescription)")
+                            }
                         }
                     }
                 }

@@ -22,6 +22,7 @@ extension DailyPlanner {
     @NSManaged public var startDate: Date?
     @NSManaged public var title: String?
     @NSManaged public var id: UUID?
+    @NSManaged public var isCompleted: Bool
 
 }
 

@@ -218,8 +218,7 @@ struct WeekPlanner: View {
                                 .padding(.leading, 130)
                             
                             List{
-                                ForEach(dailyPlans, id: \.self) {
-                                    plan in
+                                ForEach(dailyPlans, id: \.self) { plan in
                                     VStack(alignment: .leading){
                                         Text(plan.title ?? "No title")
                                             .font(.headline)
@@ -232,6 +231,17 @@ struct WeekPlanner: View {
                                     .background(colorFromHex(plan.backgroundColor))
                                     .cornerRadius(10)
                                     .shadow(radius: 2)
+                                }
+                                .onDelete { indexSet in
+                                    for index in indexSet {
+                                        let plan = dailyPlans[index]
+                                        viewContext.delete(plan)
+                                    }
+                                    do {
+                                        try viewContext.save()
+                                    } catch {
+                                        print("Error deleting plan: \(error.localizedDescription)")
+                                    }
                                 }
                             }
                         }
@@ -286,6 +296,17 @@ struct WeekPlanner: View {
                                     .cornerRadius(10)
                                     .shadow(radius: 2)
                                 }
+                                .onDelete { indexSet in
+                                    for index in indexSet {
+                                        let weekplan = weeklyPlans[index]
+                                        viewContext.delete(weekplan)
+                                    }
+                                    do {
+                                        try viewContext.save()
+                                    } catch {
+                                        print("Error deleting weekly plan: \(error.localizedDescription)")
+                                    }
+                                }
                             }
                         }
                     }
@@ -310,7 +331,8 @@ struct WeekPlanner: View {
                         endDate: Date(),
                         backgroundColor: Color.green,
                         title: "",
-                        note: "")
+                        note: "",
+                        isCompleted: false)
                 }
                 .sheet(isPresented: $isCreateNewWeekPlanPresented){
                     CreateNewWeekPlan(

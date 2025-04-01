@@ -102,7 +102,6 @@ struct ContentView: View {
                     .transition(.move(edge: .leading))
                 }
                 
-                
                 VStack(alignment: .leading) {
                     Text("Plan With Me")
                         .font(.custom("Arial", size: 40))
@@ -153,17 +152,63 @@ struct ContentView: View {
                         List {
                             ForEach(dailyPlans, id: \.self) { plan in
                                 VStack(alignment: .leading) {
-                                    Text(plan.title ?? "No title")
-                                        .font(.headline)
-                                    Text("From \(dateFormatter.string(from: plan.startDate!)) to \(dateFormatter.string(from: plan.endDate!))")
-                                        .font(.subheadline)
-                                    Text(plan.note ?? "No note")
-                                        .font(.body)
+                                    HStack {
+                                        Button(action: {
+                                            plan.isCompleted.toggle()
+                                            
+                                            do {
+                                                try viewContext.save()
+                                            } catch {
+                                                print("Error saving completed task state: \(error.localizedDescription)")
+                                            }
+                                        }) {
+                                            Image(systemName: plan.isCompleted ? "checkmark.square.fill" : "square")
+                                                .foregroundColor(plan.isCompleted ? .red : .black)
+                                                .font(.title)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        
+                                        VStack(alignment: .leading) {
+                                            Text(plan.title ?? "No title")
+                                                .font(.headline)
+                                                .strikethrough(plan.isCompleted)
+                                                
+                                            Text("From \(dateFormatter.string(from: plan.startDate!)) to \(dateFormatter.string(from: plan.endDate!))")
+                                                .font(.subheadline)
+                                                .strikethrough(plan.isCompleted)
+                                                
+                                            Text(plan.note ?? "No note")
+                                                .font(.body)
+                                                .strikethrough(plan.isCompleted)
+                                        }
+                                        .padding()
+                                        .background(colorFromHex(plan.backgroundColor))
+                                        .cornerRadius(10)
+                                        .shadow(radius: 2)
+                                    }
+                                    
+                                    if plan.isCompleted {
+                                        Text("Task Completed")
+                                            .font(.headline)
+                                            .foregroundColor(.red)
+                                            .padding()
+                                            .background(Color.red.opacity(0.2))
+                                            .cornerRadius(10)
+                                            .padding(.top, 5)
+                                    }
                                 }
-                                .padding()
-                                .background(colorFromHex(plan.backgroundColor)) // Set background color
-                                .cornerRadius(10)
-                                .shadow(radius: 2)
+                            }
+                            .onDelete { indexSet in
+                                for index in indexSet {
+                                    let plan = dailyPlans[index]
+                                    viewContext.delete(plan)
+                                }
+                                
+                                do {
+                                    try viewContext.save()
+                                } catch {
+                                    print("Error deleting plan: \(error.localizedDescription)")
+                                }
                             }
                         }
                     }
@@ -182,11 +227,11 @@ struct ContentView: View {
                 )
                 .background(Color.white)
                 .sheet(isPresented: $isCreateNewPlanPresented){
-                    CreateNewPlan(isPresented: $isCreateNewPlanPresented, startDate: Date(), endDate: Date(), backgroundColor: Color.green, title: "", note: "")
+                    CreateNewPlan(isPresented: $isCreateNewPlanPresented, startDate: Date(), endDate: Date(), backgroundColor: Color.green, title: "", note: "", isCompleted: false)
                 }
             }
-            .navigationBarBackButtonHidden(true)
         }
+        .navigationBarBackButtonHidden(true)
     }
     
     private let dateFormatter: DateFormatter = {
@@ -197,7 +242,6 @@ struct ContentView: View {
     }()
     
     struct ContentView_Previews: PreviewProvider {
-        
         static var previews: some View {
             ContentView()
         }
